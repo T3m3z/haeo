@@ -1,35 +1,3 @@
----
-name: Simplify Device Model Structure
-overview: Refactor the device layer to simplify the model by adding a real network element, removing standalone nodes and connections, and introducing a Hybrid Inverter element.
-todos:
-  - id: 1_add_network_element
-    content: Modify network loader to add network source/sink element
-    status: pending
-  - id: 2_create_hybrid_inverter
-    content: Create hybrid_inverter.py with config schema and model generation
-    status: pending
-  - id: 3_update_elements_registry
-    content: Update elements/__init__.py to remove node/connection and add hybrid_inverter
-    status: pending
-    dependencies:
-      - 2_create_hybrid_inverter
-  - id: 4_update_validation
-    content: Update validation.py to handle removal of connection element type constant
-    status: pending
-    dependencies:
-      - 3_update_elements_registry
-  - id: 5_delete_files
-    content: Delete node.py and connection.py
-    status: pending
-    dependencies:
-      - 3_update_elements_registry
-  - id: 6_update_docs
-    content: Update documentation (index.md, hybrid-inverter.md, delete old docs)
-    status: pending
-    dependencies:
-      - 5_delete_files
----
-
 # Simplify Device Model Structure
 
 This plan addresses the user's request to simplify the model structure by making the network a real element, removing low-level Node/Connection device elements, and introducing a Hybrid Inverter element to manage DC/AC coupling.

@@ -106,51 +106,6 @@
       },
       "error": { "missing_name": "Name is required", "name_exists": "A device with this name already exists" }
     },
-    "connection": {
-      "flow_title": "Connection",
-      "entry_type": "Connection",
-      "initiate_flow": { "user": "Connection", "reconfigure": "Connection" },
-      "step": {
-        "user": {
-          "title": "Add Connection",
-          "description": "Set up connection parameters between devices",
-          "data": {
-            "efficiency_source_target": "Efficiency Source to Target (%)",
-            "efficiency_target_source": "Efficiency Target to Source (%)",
-            "max_power_source_target": "Maximum Power Source to Target",
-            "max_power_target_source": "Maximum Power Target to Source",
-            "name": "Connection Name",
-            "price_source_target": "Price Source to Target",
-            "price_target_source": "Price Target to Source",
-            "source": "Source Device",
-            "target": "Target Device"
-          }
-        },
-        "reconfigure": {
-          "title": "Edit Connection",
-          "description": "Update connection configuration",
-          "data": {
-            "efficiency_source_target": "Efficiency Source to Target (%)",
-            "efficiency_target_source": "Efficiency Target to Source (%)",
-            "max_power_source_target": "Maximum Power Source to Target",
-            "max_power_target_source": "Maximum Power Target to Source",
-            "name": "Connection Name",
-            "price_source_target": "Price Source to Target",
-            "price_target_source": "Price Target to Source",
-            "source": "Source Device",
-            "target": "Target Device"
-          }
-        }
-      },
-      "error": {
-        "cannot_connect_to_self": "Cannot connect a device to itself",
-        "max_power_must_be_positive_for_bidirectional": "Maximum power must be positive for bidirectional connections",
-        "min_power_negative_not_allowed_unidirectional": "Minimum power cannot be negative for unidirectional connections",
-        "min_power_too_high": "Minimum power must be less than or equal to maximum power",
-        "missing_name": "Name is required",
-        "name_exists": "A device with this name already exists"
-      }
-    },
     "grid": {
       "flow_title": "Grid Connection",
       "entry_type": "Grid Connection",
@@ -201,29 +156,43 @@
       },
       "error": { "missing_name": "Name is required", "name_exists": "A device with this name already exists" }
     },
+    "inverter": {
+      "flow_title": "Inverter",
+      "entry_type": "Inverter",
+      "initiate_flow": { "user": "Inverter", "reconfigure": "Inverter" },
+      "step": {
+        "user": {
+          "title": "Add Inverter",
+          "description": "Set up an inverter with DC/AC coupling",
+          "data": {
+            "connection": "AC Connection",
+            "efficiency_export": "Export Efficiency (DC to AC) (%)",
+            "efficiency_import": "Import Efficiency (AC to DC) (%)",
+            "max_power_export": "Maximum Export Power (DC to AC)",
+            "max_power_import": "Maximum Import Power (AC to DC)",
+            "name": "Inverter Name"
+          }
+        },
+        "reconfigure": {
+          "title": "Edit Inverter",
+          "description": "Update inverter configuration",
+          "data": {
+            "connection": "AC Connection",
+            "efficiency_export": "Export Efficiency (DC to AC) (%)",
+            "efficiency_import": "Import Efficiency (AC to DC) (%)",
+            "max_power_export": "Maximum Export Power (DC to AC)",
+            "max_power_import": "Maximum Import Power (AC to DC)",
+            "name": "Inverter Name"
+          }
+        }
+      },
+      "error": { "missing_name": "Name is required", "name_exists": "A device with this name already exists" }
+    },
     "network": {
       "flow_title": "Network",
       "entry_type": "Network",
       "initiate_flow": { "user": "Network", "reconfigure": "Network" },
       "step": {}
-    },
-    "node": {
-      "flow_title": "Node",
-      "entry_type": "Node",
-      "initiate_flow": { "user": "Node", "reconfigure": "Node" },
-      "step": {
-        "user": {
-          "title": "Add Node",
-          "description": "Add a node for power balance calculations",
-          "data": { "name": "Node Name" }
-        },
-        "reconfigure": {
-          "title": "Edit Node",
-          "description": "Update node configuration",
-          "data": { "name": "Node Name" }
-        }
-      },
-      "error": { "missing_name": "Name is required", "name_exists": "A device with this name already exists" }
     },
     "photovoltaics": {
       "flow_title": "Photovoltaics",
@@ -261,11 +230,10 @@
     "battery_device_normal": { "name": "{name} Normal Region" },
     "battery_device_overcharge": { "name": "{name} Overcharge Region" },
     "battery_device_undercharge": { "name": "{name} Undercharge Region" },
-    "connection": { "name": "{name}" },
     "grid": { "name": "{name}" },
+    "inverter": { "name": "{name}" },
     "load": { "name": "{name}" },
     "network": { "name": "{name}" },
-    "node": { "name": "{name}" },
     "photovoltaics": { "name": "{name}" }
   },
   "entity": {
@@ -282,16 +250,6 @@
       "battery_soc_max": { "name": "SOC Max Shadow Price" },
       "battery_soc_min": { "name": "SOC Min Shadow Price" },
       "battery_state_of_charge": { "name": "State of Charge" },
-      "connection_power_active": { "name": "Active Power" },
-      "connection_power_max_source_target": { "name": "Max Power (Source to Target)" },
-      "connection_power_max_target_source": { "name": "Max Power (Target to Source)" },
-      "connection_power_source_target": { "name": "Power (Source to Target)" },
-      "connection_power_target_source": { "name": "Power (Target to Source)" },
-      "connection_price_source_target": { "name": "Price (Source to Target)" },
-      "connection_price_target_source": { "name": "Price (Target to Source)" },
-      "connection_shadow_power_max_source_target": { "name": "Shadow Price (Max Source to Target)" },
-      "connection_shadow_power_max_target_source": { "name": "Shadow Price (Max Target to Source)" },
-      "connection_time_slice": { "name": "Time Slice Shadow Price" },
       "grid_power_active": { "name": "Power Active" },
       "grid_power_export": { "name": "Power Export" },
       "grid_power_import": { "name": "Power Import" },
@@ -301,13 +259,20 @@
       "grid_power_max_import_price": { "name": "Max Import Price (Shadow)" },
       "grid_price_export": { "name": "Export Price" },
       "grid_price_import": { "name": "Import Price" },
+      "inverter_dc_bus_power_balance": { "name": "DC Bus Power Balance" },
+      "inverter_power_active": { "name": "Active Power" },
+      "inverter_power_export": { "name": "Export Power (DC to AC)" },
+      "inverter_power_import": { "name": "Import Power (AC to DC)" },
+      "inverter_power_max_export": { "name": "Max Export Power" },
+      "inverter_power_max_export_price": { "name": "Max Export Shadow Price" },
+      "inverter_power_max_import": { "name": "Max Import Power" },
+      "inverter_power_max_import_price": { "name": "Max Import Shadow Price" },
       "load_forecast_limit_price": { "name": "Forecast Limit Price (Shadow)" },
       "load_power": { "name": "Power" },
       "load_power_possible": { "name": "Power Possible" },
       "network_optimization_cost": { "name": "Optimization Cost" },
       "network_optimization_duration": { "name": "Optimization Duration" },
       "network_optimization_status": { "name": "Optimization Status" },
-      "node_power_balance": { "name": "Power Balance Shadow Price" },
       "photovoltaics_forecast_limit": { "name": "Forecast Limit Price (Shadow)" },
       "photovoltaics_power": { "name": "Power" },
       "photovoltaics_power_available": { "name": "Power Available" },

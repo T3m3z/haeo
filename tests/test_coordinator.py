@@ -50,8 +50,8 @@ from custom_components.haeo.coordinator import (
 )
 from custom_components.haeo.elements import (
     ELEMENT_TYPE_BATTERY,
-    ELEMENT_TYPE_CONNECTION,
     ELEMENT_TYPE_GRID,
+    ELEMENT_TYPE_INVERTER,
     ELEMENT_TYPES,
     ElementConfigSchema,
 )
@@ -66,12 +66,12 @@ from custom_components.haeo.elements.battery import (
     CONF_MIN_CHARGE_PERCENTAGE,
     BatteryConfigSchema,
 )
-from custom_components.haeo.elements.connection import (
-    CONF_SOURCE,
-    CONF_TARGET,
-    CONNECTION_DEVICE_CONNECTION,
-    CONNECTION_POWER_SOURCE_TARGET,
-    CONNECTION_POWER_TARGET_SOURCE,
+from custom_components.haeo.elements.inverter import (
+    CONF_MAX_POWER_EXPORT,
+    CONF_MAX_POWER_IMPORT,
+    INVERTER_DEVICE,
+    INVERTER_POWER_EXPORT,
+    INVERTER_POWER_IMPORT,
 )
 from custom_components.haeo.elements.grid import CONF_CONNECTION as CONF_CONNECTION_GRID
 from custom_components.haeo.elements.grid import (
@@ -168,19 +168,20 @@ def mock_grid_subentry(hass: HomeAssistant, mock_hub_entry: MockConfigEntry) -> 
 
 
 @pytest.fixture
-def mock_connection_subentry(hass: HomeAssistant, mock_hub_entry: MockConfigEntry) -> ConfigSubentry:
-    """Create a mock connection subentry."""
+def mock_inverter_subentry(hass: HomeAssistant, mock_hub_entry: MockConfigEntry) -> ConfigSubentry:
+    """Create a mock inverter subentry."""
     subentry = ConfigSubentry(
         data=MappingProxyType(
             {
-                CONF_NAME: "test_connection",
-                CONF_ELEMENT_TYPE: ELEMENT_TYPE_CONNECTION,
-                CONF_SOURCE: "test_battery",
-                CONF_TARGET: "test_grid",
+                CONF_NAME: "test_inverter",
+                CONF_ELEMENT_TYPE: ELEMENT_TYPE_INVERTER,
+                CONF_CONNECTION: "network",
+                CONF_MAX_POWER_EXPORT: 10.0,
+                CONF_MAX_POWER_IMPORT: 10.0,
             }
         ),
-        subentry_type=ELEMENT_TYPE_CONNECTION,
-        title="Battery to Grid",
+        subentry_type=ELEMENT_TYPE_INVERTER,
+        title="Test Inverter",
         unique_id=None,
     )
     hass.config_entries.async_add_subentry(mock_hub_entry, subentry)
@@ -234,7 +235,6 @@ def test_update_interval_respects_config(
     assert coordinator.update_interval == timedelta(minutes=12)
 
 
-@pytest.mark.usefixtures("mock_connection_subentry")
 async def test_async_update_data_returns_outputs(
     hass: HomeAssistant,
     mock_hub_entry: MockConfigEntry,
@@ -251,17 +251,9 @@ async def test_async_update_data_returns_outputs(
     empty_element = MagicMock()
     empty_element.outputs.return_value = {}
 
-    # Add connection element (config name is slugified to "battery_to_grid")
-    fake_connection = MagicMock()
-    fake_connection.outputs.return_value = {
-        CONNECTION_POWER_SOURCE_TARGET: OutputData(type=OUTPUT_TYPE_POWER, unit="kW", values=(0.5,)),
-        CONNECTION_POWER_TARGET_SOURCE: OutputData(type=OUTPUT_TYPE_POWER, unit="kW", values=(0.3,)),
-    }
-
     fake_network.elements = {
         "test_battery": fake_element,
         "empty": empty_element,
-        "battery_to_grid": fake_connection,
     }
 
     # Mock battery adapter
@@ -275,15 +267,6 @@ async def test_async_update_data_returns_outputs(
     base_timestamp = int(datetime(2024, 1, 1, 0, 15, tzinfo=UTC).timestamp())
     expected_forecast_times = (base_timestamp, base_timestamp + 30 * 60, base_timestamp + 2 * 30 * 60)
 
-    # Mock connection adapter to return proper outputs
-    mock_connection_adapter = MagicMock()
-    mock_connection_adapter.outputs.return_value = {
-        CONNECTION_DEVICE_CONNECTION: {
-            CONNECTION_POWER_SOURCE_TARGET: OutputData(type=OUTPUT_TYPE_POWER, unit="kW", values=(0.5,)),
-            CONNECTION_POWER_TARGET_SOURCE: OutputData(type=OUTPUT_TYPE_POWER, unit="kW", values=(0.3,)),
-        }
-    }
-
     # Mock empty outputs for grid
     mock_empty_outputs = MagicMock(return_value={})
 
@@ -291,12 +274,6 @@ async def test_async_update_data_returns_outputs(
     mock_loaded_configs = {
         "Test Battery": mock_battery_subentry.data,
         "Test Grid": mock_grid_subentry.data,
-        "Battery to Grid": {
-            CONF_ELEMENT_TYPE: "connection",
-            CONF_NAME: "battery_to_grid",
-            CONF_SOURCE: "test_battery",
-            CONF_TARGET: "test_grid",
-        },
     }
 
     # Patch the registry entries to use our mocked output functions
@@ -315,7 +292,6 @@ async def test_async_update_data_returns_outputs(
             {
                 "battery": ELEMENT_TYPES["battery"]._replace(outputs=mock_battery_adapter.outputs),
                 "grid": ELEMENT_TYPES["grid"]._replace(outputs=mock_empty_outputs),
-                "connection": ELEMENT_TYPES["connection"]._replace(outputs=mock_connection_adapter.outputs),
             },
         ),
     ):

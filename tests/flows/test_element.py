@@ -17,7 +17,7 @@ from custom_components.haeo.const import (
     DOMAIN,
     INTEGRATION_TYPE_HUB,
 )
-from custom_components.haeo.elements import battery, connection, grid
+from custom_components.haeo.elements import battery, grid, inverter
 from custom_components.haeo.elements.battery import BatteryConfigSchema
 from custom_components.haeo.flows.element import ElementSubentryFlow, create_subentry_flow_class
 from custom_components.haeo.flows.hub import HubConfigFlow
@@ -66,10 +66,10 @@ async def test_subentry_flow_classes_have_correct_attributes(hass: HomeAssistant
     assert hasattr(grid_flow_class, "__name__")
     assert grid_flow_class.__name__ == "GridSubentryFlow"
 
-    # Check connection flow
-    connection_flow_class = subentry_types[connection.ELEMENT_TYPE]
-    assert hasattr(connection_flow_class, "__name__")
-    assert connection_flow_class.__name__ == "ConnectionSubentryFlow"
+    # Check inverter flow
+    inverter_flow_class = subentry_types[inverter.ELEMENT_TYPE]
+    assert hasattr(inverter_flow_class, "__name__")
+    assert inverter_flow_class.__name__ == "InverterSubentryFlow"
 
 
 async def test_get_subentries(hass: HomeAssistant) -> None:

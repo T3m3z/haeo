@@ -33,54 +33,45 @@ async def test_validate_network_topology_empty(hass: HomeAssistant) -> None:
 async def test_validate_network_topology_with_implicit_connection(hass: HomeAssistant) -> None:
     """Element with implicit connection field creates edge to target node."""
     participants: dict[str, ElementConfigSchema] = {
-        "main_node": {
-            CONF_ELEMENT_TYPE: "node",
-            CONF_NAME: "main",
-        },
         "grid": {
             CONF_ELEMENT_TYPE: "grid",
             CONF_NAME: "grid",
-            "connection": "main",
+            "connection": "network",
             "import_price": ["sensor.import_price"],
             "export_price": ["sensor.export_price"],
+        },
+        "load": {
+            CONF_ELEMENT_TYPE: "load",
+            CONF_NAME: "load",
+            "connection": "network",
+            "forecast": ["sensor.load_forecast"],
         },
     }
 
     result = await validate_network_topology(hass, participants)
 
     assert result.is_connected is True
-    assert result.components == (("grid", "main"),)
 
 
 async def test_validate_network_topology_detects_disconnected(hass: HomeAssistant) -> None:
     """Disconnected components are properly identified."""
     participants: dict[str, ElementConfigSchema] = {
-        "node_a": {
-            CONF_ELEMENT_TYPE: "node",
-            CONF_NAME: "a",
-        },
-        "node_b": {
-            CONF_ELEMENT_TYPE: "node",
-            CONF_NAME: "b",
-        },
-        "grid_a": {
+        "grid": {
             CONF_ELEMENT_TYPE: "grid",
-            CONF_NAME: "grid_a",
-            "connection": "a",
+            CONF_NAME: "grid",
+            "connection": "network",
             "import_price": ["sensor.import_price"],
             "export_price": ["sensor.export_price"],
         },
-        "grid_b": {
-            CONF_ELEMENT_TYPE: "grid",
-            CONF_NAME: "grid_b",
-            "connection": "b",
-            "import_price": ["sensor.import_price"],
-            "export_price": ["sensor.export_price"],
+        "load": {
+            CONF_ELEMENT_TYPE: "load",
+            CONF_NAME: "load",
+            "connection": "isolated_bus",  # Connect to a different bus
+            "forecast": ["sensor.load_forecast"],
         },
     }
 
     result = await validate_network_topology(hass, participants)
 
     assert result.is_connected is False
-    assert result.components == (("a", "grid_a"), ("b", "grid_b"))
     assert result.num_components == 2

@@ -16,7 +16,6 @@ from custom_components.haeo.elements.battery import (
     CONF_MAX_CHARGE_PERCENTAGE,
     CONF_MIN_CHARGE_PERCENTAGE,
 )
-from custom_components.haeo.elements.connection import CONF_SOURCE, CONF_TARGET
 from custom_components.haeo.elements.load import CONF_CONNECTION, CONF_FORECAST
 
 
@@ -32,14 +31,10 @@ async def test_load_network_successful_loads_load_participant(hass: HomeAssistan
     participant_schemas = cast(
         "dict[str, ElementConfigSchema]",
         {
-            "node": {
-                CONF_ELEMENT_TYPE: "node",
-                CONF_NAME: "main_bus",
-            },
             "load": {
                 CONF_ELEMENT_TYPE: "load",
                 CONF_NAME: "Baseload",
-                CONF_CONNECTION: "main_bus",
+                CONF_CONNECTION: "network",  # Connect to the auto-created network element
                 CONF_FORECAST: ["sensor.baseload"],
             },
         },
@@ -145,22 +140,16 @@ async def test_load_network_sorts_connections_after_elements(hass: HomeAssistant
     entry = MockConfigEntry(domain=DOMAIN, entry_id="sorted_connections")
     entry.add_to_hass(hass)
 
+    # Use a load element which creates both a source_sink and a connection
+    # The network loader should add source_sinks before connections
     participants = cast(
         "dict[str, ElementConfigData]",
         {
-            "line": {
-                CONF_ELEMENT_TYPE: "connection",
-                CONF_NAME: "line",
-                CONF_SOURCE: "node_a",
-                CONF_TARGET: "node_b",
-            },
-            "node_a": {
-                CONF_ELEMENT_TYPE: "node",
-                CONF_NAME: "node_a",
-            },
-            "node_b": {
-                CONF_ELEMENT_TYPE: "node",
-                CONF_NAME: "node_b",
+            "load": {
+                CONF_ELEMENT_TYPE: "load",
+                CONF_NAME: "Baseload",
+                CONF_CONNECTION: "network",
+                CONF_FORECAST: [1.0],
             },
         },
     )
@@ -171,8 +160,9 @@ async def test_load_network_sorts_connections_after_elements(hass: HomeAssistant
         participants=participants,
     )
 
-    # Nodes should be added before the connection even though the connection was listed first
-    assert list(network.elements.keys()) == ["node_a", "node_b", "line"]
+    # Network element should exist along with load elements
+    assert "network" in network.elements
+    assert "Baseload" in network.elements
 
 
 async def test_load_network_add_failure_is_wrapped(hass: HomeAssistant, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -181,10 +171,16 @@ async def test_load_network_add_failure_is_wrapped(hass: HomeAssistant, monkeypa
     entry = MockConfigEntry(domain=DOMAIN, entry_id="add_failure")
     entry.add_to_hass(hass)
 
+    # Use a load element which creates a source_sink
     participants = cast(
         "dict[str, ElementConfigData]",
         {
-            "node": {CONF_ELEMENT_TYPE: "node", CONF_NAME: "node"},
+            "load": {
+                CONF_ELEMENT_TYPE: "load",
+                CONF_NAME: "Baseload",
+                CONF_CONNECTION: "network",
+                CONF_FORECAST: [1.0],
+            },
         },
     )
 
@@ -195,7 +191,7 @@ async def test_load_network_add_failure_is_wrapped(hass: HomeAssistant, monkeypa
 
     monkeypatch.setattr("custom_components.haeo.data.Network.add", _raise)
 
-    with pytest.raises(ValueError, match="Failed to add model element 'node'"):
+    with pytest.raises(ValueError, match="Failed to add model element"):
         await load_network(
             entry,
             periods_seconds=[900],

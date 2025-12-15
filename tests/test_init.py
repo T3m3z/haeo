@@ -25,9 +25,8 @@ from custom_components.haeo.const import (
     DOMAIN,
     INTEGRATION_TYPE_HUB,
 )
-from custom_components.haeo.elements import ELEMENT_TYPE_BATTERY, ELEMENT_TYPE_CONNECTION, ELEMENT_TYPE_GRID
+from custom_components.haeo.elements import ELEMENT_TYPE_BATTERY, ELEMENT_TYPE_GRID
 from custom_components.haeo.elements.battery import CONF_CAPACITY, CONF_INITIAL_CHARGE_PERCENTAGE
-from custom_components.haeo.elements.connection import CONF_SOURCE, CONF_TARGET
 from custom_components.haeo.elements.grid import (
     CONF_EXPORT_LIMIT,
     CONF_EXPORT_PRICE,
@@ -92,25 +91,6 @@ def mock_grid_subentry(hass: HomeAssistant, mock_hub_entry: MockConfigEntry) -> 
         ),
         subentry_type=ELEMENT_TYPE_GRID,
         title="Test Grid",
-        unique_id=None,
-    )
-    hass.config_entries.async_add_subentry(mock_hub_entry, subentry)
-    return subentry
-
-
-@pytest.fixture
-def mock_connection_subentry(hass: HomeAssistant, mock_hub_entry: MockConfigEntry) -> ConfigSubentry:
-    """Create a mock connection subentry."""
-    subentry = ConfigSubentry(
-        data=MappingProxyType(
-            {
-                CONF_ELEMENT_TYPE: ELEMENT_TYPE_CONNECTION,
-                CONF_SOURCE: "test_battery",
-                CONF_TARGET: "test_grid",
-            }
-        ),
-        subentry_type=ELEMENT_TYPE_CONNECTION,
-        title="Battery to Grid",
         unique_id=None,
     )
     hass.config_entries.async_add_subentry(mock_hub_entry, subentry)

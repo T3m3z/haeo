@@ -43,9 +43,8 @@ from custom_components.haeo.elements import (
     ElementRegistryEntry,
     ElementType,
     battery,
-    connection,
     grid,
-    node,
+    inverter,
 )
 from custom_components.haeo.flows.element import ElementSubentryFlow, create_subentry_flow_class
 from custom_components.haeo.model import OutputData
@@ -90,7 +89,7 @@ def _add_participant_subentry(
     hass: HomeAssistant,
     hub_entry: MockConfigEntry,
     name: str,
-    element_type: ElementType = node.ELEMENT_TYPE,
+    element_type: ElementType = inverter.ELEMENT_TYPE,
 ) -> ConfigSubentry:
     """Ensure a participant subentry exists for connection endpoints."""
 
@@ -115,14 +114,11 @@ def _prepare_flow_context(
     element_type: ElementType,
     config: dict[str, Any],
 ) -> None:
-    """Populate dependent participants required by connection flows."""
+    """Populate dependent participants required by element flows.
 
-    if element_type == connection.ELEMENT_TYPE:
-        for key in (connection.CONF_SOURCE, connection.CONF_TARGET):
-            endpoint = config.get(key)
-            if isinstance(endpoint, str) and endpoint:
-                inferred_type: ElementType = grid.ELEMENT_TYPE if "grid" in endpoint.lower() else battery.ELEMENT_TYPE
-                _add_participant_subentry(hass, hub_entry, endpoint, inferred_type)
+    Currently no special preparation is needed for any element type.
+    """
+    pass  # No special preparation needed for current element types
 
 
 def _make_subentry(element_type: ElementType, config: dict[str, Any]) -> ConfigSubentry:
@@ -440,7 +436,7 @@ async def test_element_flow_user_step_invokes_connectivity_validation(
 ) -> None:
     """Ensure user step validates connectivity with updated participants."""
 
-    element_type: ElementType = node.ELEMENT_TYPE
+    element_type: ElementType = inverter.ELEMENT_TYPE
     flow = _create_flow(hass, hub_entry, element_type)
     user_input = deepcopy(element_test_data[element_type].valid[0].config)
 
@@ -472,7 +468,7 @@ async def test_element_flow_reconfigure_invokes_connectivity_validation(
 ) -> None:
     """Ensure reconfigure step validates connectivity with updated participants."""
 
-    element_type: ElementType = node.ELEMENT_TYPE
+    element_type: ElementType = inverter.ELEMENT_TYPE
     existing_config = deepcopy(element_test_data[element_type].valid[0].config)
 
     _prepare_flow_context(hass, hub_entry, element_type, existing_config)
@@ -501,7 +497,7 @@ async def test_get_other_element_entries_filters_correctly(
     hub_entry: MockConfigEntry,
     flow_test_element_factory: FlowTestElementFactory,
 ) -> None:
-    """Verify participant filtering excludes non-endpoint subentries."""
+    """Verify participant filtering excludes non-element subentries like network."""
 
     endpoint_one = flow_test_element_factory.create_subentry(name="Endpoint One")
     endpoint_two = flow_test_element_factory.create_subentry(name="Endpoint Two")
@@ -516,20 +512,9 @@ async def test_get_other_element_entries_filters_correctly(
     )
     hass.config_entries.async_add_subentry(hub_entry, network_subentry)
 
-    connection_subentry = _make_subentry(
-        connection.ELEMENT_TYPE,
-        {
-            CONF_NAME: "Connection 1",
-            connection.CONF_SOURCE: "Endpoint One",
-            connection.CONF_TARGET: "Endpoint Two",
-        },
-    )
-    hass.config_entries.async_add_subentry(hub_entry, connection_subentry)
-
     flow = _create_flow(hass, hub_entry, flow_test_element_factory.element_type_for_flow())
 
-    participants = flow._get_non_connection_element_names()
+    participants = flow._get_element_names()
 
     assert set(participants) == {"Endpoint One", "Endpoint Two"}
     assert "Network" not in participants
-    assert "Connection 1" not in participants

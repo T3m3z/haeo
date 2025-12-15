@@ -7,7 +7,10 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 
 from .const import CONF_ELEMENT_TYPE
-from .elements import ELEMENT_TYPE_CONNECTION, ELEMENT_TYPES, ElementConfigSchema, collect_element_subentries
+from .elements import ELEMENT_TYPES, ElementConfigSchema, collect_element_subentries
+
+# Model element type for connections (used for topology validation)
+MODEL_ELEMENT_TYPE_CONNECTION = "connection"
 from .schema import load as schema_load
 from .util.graph import ConnectivityResult as NetworkConnectivityResult
 from .util.graph import find_connected_components
@@ -44,12 +47,12 @@ async def _build_adjacency(hass: HomeAssistant, participants: Mapping[str, Eleme
 
         # Add non-connection elements as nodes
         for elem in model_elements:
-            if elem.get(CONF_ELEMENT_TYPE) != ELEMENT_TYPE_CONNECTION:
+            if elem.get(CONF_ELEMENT_TYPE) != MODEL_ELEMENT_TYPE_CONNECTION:
                 adjacency.setdefault(elem["name"], set())
 
         # Add edges from connection elements
         for elem in model_elements:
-            if elem.get(CONF_ELEMENT_TYPE) == ELEMENT_TYPE_CONNECTION:
+            if elem.get(CONF_ELEMENT_TYPE) == MODEL_ELEMENT_TYPE_CONNECTION:
                 source: Any = elem["source"]
                 target: Any = elem["target"]
                 adjacency.setdefault(source, set()).add(target)

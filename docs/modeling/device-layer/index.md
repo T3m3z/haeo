@@ -54,13 +54,13 @@ This prevents naming collisions and groups related components visually in Home A
 
     [:material-arrow-right: Grid modeling](grid.md)
 
-- :material-weather-sunny:{ .lg .middle } **Photovoltaics**
+- :material-swap-horizontal:{ .lg .middle } **Inverter**
 
     ---
 
-    Solar generation with optional curtailment.
+    DC/AC coupling with bidirectional power flow.
 
-    [:material-arrow-right: Photovoltaics modeling](photovoltaics.md)
+    [:material-arrow-right: Inverter modeling](inverter.md)
 
 - :material-gauge:{ .lg .middle } **Load**
 
@@ -69,5 +69,13 @@ This prevents naming collisions and groups related components visually in Home A
     Power consumption modeling.
 
     [:material-arrow-right: Load modeling](loads.md)
+
+- :material-weather-sunny:{ .lg .middle } **Photovoltaics**
+
+    ---
+
+    Solar generation with optional curtailment.
+
+    [:material-arrow-right: Photovoltaics modeling](photovoltaics.md)
 
 </div>

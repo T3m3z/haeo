@@ -1,6 +1,5 @@
 """Integration tests for Network optimization scenarios."""
 
-from custom_components.haeo.elements import ELEMENT_TYPE_CONNECTION
 from custom_components.haeo.model import Network
 
 
@@ -12,7 +11,7 @@ def test_simple_optimization() -> None:
     network.add("source_sink", "grid", is_source=True, is_sink=True)
     network.add("source_sink", "net", is_source=False, is_sink=False)
     network.add(
-        ELEMENT_TYPE_CONNECTION,
+        "connection",
         "grid_connection",
         source="grid",
         target="net",
@@ -23,7 +22,7 @@ def test_simple_optimization() -> None:
     )
     network.add("source_sink", "load", is_source=False, is_sink=True)
     network.add(
-        ELEMENT_TYPE_CONNECTION,
+        "connection",
         "load_connection",
         source="net",
         target="load",
@@ -47,7 +46,7 @@ def test_network_validation() -> None:
 
     # Create valid connection
     network.add(
-        ELEMENT_TYPE_CONNECTION,
+        "connection",
         "valid_connection",
         source="source",
         target="sink",

@@ -9,8 +9,9 @@ import pytest
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.haeo.const import CONF_ELEMENT_TYPE, CONF_NAME, DOMAIN
-from custom_components.haeo.elements import ELEMENT_TYPE_CONNECTION, ELEMENT_TYPE_NODE
-from custom_components.haeo.elements.connection import CONF_SOURCE, CONF_TARGET
+from custom_components.haeo.elements import ELEMENT_TYPE_GRID, ELEMENT_TYPE_LOAD
+from custom_components.haeo.elements.grid import CONF_CONNECTION, CONF_EXPORT_PRICE, CONF_IMPORT_PRICE
+from custom_components.haeo.elements.load import CONF_FORECAST
 from custom_components.haeo.network import evaluate_network_connectivity
 
 
@@ -32,15 +33,23 @@ async def test_evaluate_network_connectivity_connected(
     hass: HomeAssistant,
     config_entry: MockConfigEntry,
 ) -> None:
-    """Network with a single node should be considered connected."""
+    """Network with a grid connected to network should be considered connected."""
 
-    node_a = ConfigSubentry(
-        data=MappingProxyType({CONF_ELEMENT_TYPE: ELEMENT_TYPE_NODE, CONF_NAME: "Node A"}),
-        subentry_type=ELEMENT_TYPE_NODE,
-        title="Node A",
+    grid = ConfigSubentry(
+        data=MappingProxyType(
+            {
+                CONF_ELEMENT_TYPE: ELEMENT_TYPE_GRID,
+                CONF_NAME: "Grid",
+                CONF_CONNECTION: "network",
+                CONF_IMPORT_PRICE: ["sensor.import_price"],
+                CONF_EXPORT_PRICE: ["sensor.export_price"],
+            }
+        ),
+        subentry_type=ELEMENT_TYPE_GRID,
+        title="Grid",
         unique_id=None,
     )
-    hass.config_entries.async_add_subentry(config_entry, node_a)
+    hass.config_entries.async_add_subentry(config_entry, grid)
 
     await evaluate_network_connectivity(hass, config_entry)
 
@@ -54,22 +63,39 @@ async def test_evaluate_network_connectivity_disconnected(
     hass: HomeAssistant,
     config_entry: MockConfigEntry,
 ) -> None:
-    """Network with isolated nodes should create a repair issue."""
+    """Network with isolated elements should create a repair issue."""
 
-    node_a = ConfigSubentry(
-        data=MappingProxyType({CONF_ELEMENT_TYPE: ELEMENT_TYPE_NODE, CONF_NAME: "Node A"}),
-        subentry_type=ELEMENT_TYPE_NODE,
-        title="Node A",
+    # Grid connected to "network"
+    grid = ConfigSubentry(
+        data=MappingProxyType(
+            {
+                CONF_ELEMENT_TYPE: ELEMENT_TYPE_GRID,
+                CONF_NAME: "Grid",
+                CONF_CONNECTION: "network",
+                CONF_IMPORT_PRICE: ["sensor.import_price"],
+                CONF_EXPORT_PRICE: ["sensor.export_price"],
+            }
+        ),
+        subentry_type=ELEMENT_TYPE_GRID,
+        title="Grid",
         unique_id=None,
     )
-    node_b = ConfigSubentry(
-        data=MappingProxyType({CONF_ELEMENT_TYPE: ELEMENT_TYPE_NODE, CONF_NAME: "Node B"}),
-        subentry_type=ELEMENT_TYPE_NODE,
-        title="Node B",
+    # Load connected to a different node that doesn't exist in the network
+    load = ConfigSubentry(
+        data=MappingProxyType(
+            {
+                CONF_ELEMENT_TYPE: ELEMENT_TYPE_LOAD,
+                CONF_NAME: "Load",
+                CONF_CONNECTION: "isolated_node",  # Not connected to network
+                CONF_FORECAST: ["sensor.load_forecast"],
+            }
+        ),
+        subentry_type=ELEMENT_TYPE_LOAD,
+        title="Load",
         unique_id=None,
     )
-    hass.config_entries.async_add_subentry(config_entry, node_a)
-    hass.config_entries.async_add_subentry(config_entry, node_b)
+    hass.config_entries.async_add_subentry(config_entry, grid)
+    hass.config_entries.async_add_subentry(config_entry, load)
 
     await evaluate_network_connectivity(hass, config_entry)
 
@@ -86,42 +112,64 @@ async def test_evaluate_network_connectivity_resolves_issue(
 ) -> None:
     """Validation should clear the issue when connectivity is restored."""
 
-    node_a = ConfigSubentry(
-        data=MappingProxyType({CONF_ELEMENT_TYPE: ELEMENT_TYPE_NODE, CONF_NAME: "Node A"}),
-        subentry_type=ELEMENT_TYPE_NODE,
-        title="Node A",
-        unique_id=None,
-    )
-    node_b = ConfigSubentry(
-        data=MappingProxyType({CONF_ELEMENT_TYPE: ELEMENT_TYPE_NODE, CONF_NAME: "Node B"}),
-        subentry_type=ELEMENT_TYPE_NODE,
-        title="Node B",
-        unique_id=None,
-    )
-    hass.config_entries.async_add_subentry(config_entry, node_a)
-    hass.config_entries.async_add_subentry(config_entry, node_b)
-
-    await evaluate_network_connectivity(hass, config_entry)
-
-    # Connect the nodes and re-validate
-    connection = ConfigSubentry(
+    # Grid connected to "network"
+    grid = ConfigSubentry(
         data=MappingProxyType(
             {
-                CONF_ELEMENT_TYPE: ELEMENT_TYPE_CONNECTION,
-                CONF_NAME: "A to B",
-                CONF_SOURCE: "Node A",
-                CONF_TARGET: "Node B",
+                CONF_ELEMENT_TYPE: ELEMENT_TYPE_GRID,
+                CONF_NAME: "Grid",
+                CONF_CONNECTION: "network",
+                CONF_IMPORT_PRICE: ["sensor.import_price"],
+                CONF_EXPORT_PRICE: ["sensor.export_price"],
             }
         ),
-        subentry_type=ELEMENT_TYPE_CONNECTION,
-        title="A to B",
+        subentry_type=ELEMENT_TYPE_GRID,
+        title="Grid",
         unique_id=None,
     )
-    hass.config_entries.async_add_subentry(config_entry, connection)
+    # Load initially connected to isolated node
+    load = ConfigSubentry(
+        data=MappingProxyType(
+            {
+                CONF_ELEMENT_TYPE: ELEMENT_TYPE_LOAD,
+                CONF_NAME: "Load",
+                CONF_CONNECTION: "isolated_node",  # Not connected to network
+                CONF_FORECAST: ["sensor.load_forecast"],
+            }
+        ),
+        subentry_type=ELEMENT_TYPE_LOAD,
+        title="Load",
+        unique_id=None,
+    )
+    hass.config_entries.async_add_subentry(config_entry, grid)
+    hass.config_entries.async_add_subentry(config_entry, load)
 
     await evaluate_network_connectivity(hass, config_entry)
 
+    # Verify issue was created
     issue_id = f"disconnected_network_{config_entry.entry_id}"
     issue_registry = ir.async_get(hass)
+    issue = issue_registry.async_get_issue(DOMAIN, issue_id)
+    assert issue is not None
+
+    # Now update load to connect to network
+    hass.config_entries.async_remove_subentry(config_entry, load.subentry_id)
+    load_fixed = ConfigSubentry(
+        data=MappingProxyType(
+            {
+                CONF_ELEMENT_TYPE: ELEMENT_TYPE_LOAD,
+                CONF_NAME: "Load",
+                CONF_CONNECTION: "network",  # Now connected to network
+                CONF_FORECAST: ["sensor.load_forecast"],
+            }
+        ),
+        subentry_type=ELEMENT_TYPE_LOAD,
+        title="Load",
+        unique_id=None,
+    )
+    hass.config_entries.async_add_subentry(config_entry, load_fixed)
+
+    await evaluate_network_connectivity(hass, config_entry)
+
     issue = issue_registry.async_get_issue(DOMAIN, issue_id)
     assert issue is None
