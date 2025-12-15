@@ -15,67 +15,67 @@ graph LR
     Conn <-->|links to| ACTarget[AC Target]
 ```
 
-| Model Element                               | Name               | Parameters From Configuration                                    |
-| ------------------------------------------- | ------------------ | ---------------------------------------------------------------- |
-| [SourceSink](../model-layer/source-sink.md) | `{name}`           | is_source=false, is_sink=false                                   |
-| [Connection](../model-layer/connection.md)  | `{name}:connection` | max_power, efficiency (export/import directions from config)    |
+| Model Element                               | Name                | Parameters From Configuration                                |
+| ------------------------------------------- | ------------------- | ------------------------------------------------------------ |
+| [SourceSink](../model-layer/source-sink.md) | `{name}`            | is_source=false, is_sink=false                               |
+| [Connection](../model-layer/connection.md)  | `{name}:connection` | max_power, efficiency (export/import directions from config) |
 
 ## Devices Created
 
 Inverter creates 1 device in Home Assistant:
 
-| Device  | Name     | Created When | Purpose               |
-| ------- | -------- | ------------ | --------------------- |
-| Primary | `{name}` | Always       | Inverter management   |
+| Device  | Name     | Created When | Purpose             |
+| ------- | -------- | ------------ | ------------------- |
+| Primary | `{name}` | Always       | Inverter management |
 
 ## Parameter Mapping
 
 The adapter transforms user configuration into model parameters:
 
-| User Configuration   | Model Element | Model Parameter            | Notes                        |
-| -------------------- | ------------- | -------------------------- | ---------------------------- |
-| `connection`         | Connection    | `target`                   | AC connection target         |
-| `max_power_export`   | Connection    | `max_power_source_target`  | DC to AC (export) limit      |
-| `max_power_import`   | Connection    | `max_power_target_source`  | AC to DC (import) limit      |
-| `efficiency_export`  | Connection    | `efficiency_source_target` | DC to AC conversion loss     |
-| `efficiency_import`  | Connection    | `efficiency_target_source` | AC to DC conversion loss     |
+| User Configuration  | Model Element | Model Parameter            | Notes                    |
+| ------------------- | ------------- | -------------------------- | ------------------------ |
+| `connection`        | Connection    | `target`                   | AC connection target     |
+| `max_power_export`  | Connection    | `max_power_source_target`  | DC to AC (export) limit  |
+| `max_power_import`  | Connection    | `max_power_target_source`  | AC to DC (import) limit  |
+| `efficiency_export` | Connection    | `efficiency_source_target` | DC to AC conversion loss |
+| `efficiency_import` | Connection    | `efficiency_target_source` | AC to DC conversion loss |
 
 ## Sensors Created
 
 ### Inverter Device
 
-| Sensor                   | Unit  | Update    | Description                              |
-| ------------------------ | ----- | --------- | ---------------------------------------- |
-| `power_export`           | kW    | Real-time | Power flow from DC to AC                 |
-| `power_import`           | kW    | Real-time | Power flow from AC to DC                 |
-| `power_active`           | kW    | Real-time | Net power (export - import)              |
-| `power_max_export`       | kW    | Real-time | Configured max export power (if set)     |
-| `power_max_import`       | kW    | Real-time | Configured max import power (if set)     |
-| `power_max_export_price` | $/kW  | Real-time | Shadow price for export limit (if set)   |
-| `power_max_import_price` | $/kW  | Real-time | Shadow price for import limit (if set)   |
-| `dc_bus_power_balance`   | $/kW  | Real-time | Shadow price of power at the DC bus      |
+| Sensor                   | Unit  | Update    | Description                            |
+| ------------------------ | ----- | --------- | -------------------------------------- |
+| `power_export`           | kW    | Real-time | Power flow from DC to AC               |
+| `power_import`           | kW    | Real-time | Power flow from AC to DC               |
+| `power_active`           | kW    | Real-time | Net power (export - import)            |
+| `power_max_export`       | kW    | Real-time | Configured max export power (if set)   |
+| `power_max_import`       | kW    | Real-time | Configured max import power (if set)   |
+| `power_max_export_price` | \$/kW | Real-time | Shadow price for export limit (if set) |
+| `power_max_import_price` | \$/kW | Real-time | Shadow price for import limit (if set) |
+| `dc_bus_power_balance`   | \$/kW | Real-time | Shadow price of power at the DC bus    |
 
 ## Configuration Examples
 
 ### Basic Inverter
 
-| Field              | Value   |
-| ------------------ | ------- |
-| **Name**           | Inverter |
-| **Connection**     | network |
-| **Max Power Export** | 10.0  |
-| **Max Power Import** | 10.0  |
+| Field                | Value    |
+| -------------------- | -------- |
+| **Name**             | Inverter |
+| **Connection**       | network  |
+| **Max Power Export** | 10.0     |
+| **Max Power Import** | 10.0     |
 
 ### Inverter with Efficiency
 
-| Field               | Value   |
-| ------------------- | ------- |
-| **Name**            | Inverter |
-| **Connection**      | network |
-| **Max Power Export** | 10.0  |
-| **Max Power Import** | 10.0  |
-| **Efficiency Export** | 0.97 |
-| **Efficiency Import** | 0.96 |
+| Field                 | Value    |
+| --------------------- | -------- |
+| **Name**              | Inverter |
+| **Connection**        | network  |
+| **Max Power Export**  | 10.0     |
+| **Max Power Import**  | 10.0     |
+| **Efficiency Export** | 0.97     |
+| **Efficiency Import** | 0.96     |
 
 ## Typical Use Cases
 
