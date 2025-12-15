@@ -138,24 +138,6 @@
       },
       "error": { "missing_name": "Name is required", "name_exists": "A device with this name already exists" }
     },
-    "load": {
-      "flow_title": "Load",
-      "entry_type": "Load",
-      "initiate_flow": { "user": "Load", "reconfigure": "Load" },
-      "step": {
-        "user": {
-          "title": "Add Load",
-          "description": "Set up a load with forecast or constant power",
-          "data": { "connection": "Connection", "forecast": "Forecast Sensors", "name": "Load Name" }
-        },
-        "reconfigure": {
-          "title": "Edit Load",
-          "description": "Update load configuration",
-          "data": { "connection": "Connection", "forecast": "Forecast Sensors", "name": "Load Name" }
-        }
-      },
-      "error": { "missing_name": "Name is required", "name_exists": "A device with this name already exists" }
-    },
     "inverter": {
       "flow_title": "Inverter",
       "entry_type": "Inverter",
@@ -184,6 +166,24 @@
             "max_power_import": "Maximum Import Power (AC to DC)",
             "name": "Inverter Name"
           }
+        }
+      },
+      "error": { "missing_name": "Name is required", "name_exists": "A device with this name already exists" }
+    },
+    "load": {
+      "flow_title": "Load",
+      "entry_type": "Load",
+      "initiate_flow": { "user": "Load", "reconfigure": "Load" },
+      "step": {
+        "user": {
+          "title": "Add Load",
+          "description": "Set up a load with forecast or constant power",
+          "data": { "connection": "Connection", "forecast": "Forecast Sensors", "name": "Load Name" }
+        },
+        "reconfigure": {
+          "title": "Edit Load",
+          "description": "Update load configuration",
+          "data": { "connection": "Connection", "forecast": "Forecast Sensors", "name": "Load Name" }
         }
       },
       "error": { "missing_name": "Name is required", "name_exists": "A device with this name already exists" }
