@@ -182,6 +182,7 @@ def outputs(
 
 
 __all__ = [
+    "CONFIG_DEFAULTS",
     "CONF_CONNECTION",
     "CONF_EFFICIENCY_EXPORT",
     "CONF_EFFICIENCY_IMPORT",
@@ -198,7 +199,6 @@ __all__ = [
     "INVERTER_POWER_MAX_EXPORT_PRICE",
     "INVERTER_POWER_MAX_IMPORT",
     "INVERTER_POWER_MAX_IMPORT_PRICE",
-    "CONFIG_DEFAULTS",
     "InverterConfigData",
     "InverterConfigSchema",
     "InverterOutputName",

@@ -42,8 +42,6 @@ from custom_components.haeo.elements import (
     ElementOutputName,
     ElementRegistryEntry,
     ElementType,
-    battery,
-    grid,
     inverter,
 )
 from custom_components.haeo.flows.element import ElementSubentryFlow, create_subentry_flow_class
@@ -118,7 +116,7 @@ def _prepare_flow_context(
 
     Currently no special preparation is needed for any element type.
     """
-    pass  # No special preparation needed for current element types
+    # No special preparation needed for current element types
 
 
 def _make_subentry(element_type: ElementType, config: dict[str, Any]) -> ConfigSubentry:

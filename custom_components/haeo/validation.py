@@ -8,12 +8,12 @@ from homeassistant.core import HomeAssistant
 
 from .const import CONF_ELEMENT_TYPE
 from .elements import ELEMENT_TYPES, ElementConfigSchema, collect_element_subentries
-
-# Model element type for connections (used for topology validation)
-MODEL_ELEMENT_TYPE_CONNECTION = "connection"
 from .schema import load as schema_load
 from .util.graph import ConnectivityResult as NetworkConnectivityResult
 from .util.graph import find_connected_components
+
+# Model element type for connections (used for topology validation)
+MODEL_ELEMENT_TYPE_CONNECTION = "connection"
 
 
 def collect_participant_configs(entry: ConfigEntry) -> dict[str, ElementConfigSchema]:

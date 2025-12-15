@@ -66,13 +66,6 @@ from custom_components.haeo.elements.battery import (
     CONF_MIN_CHARGE_PERCENTAGE,
     BatteryConfigSchema,
 )
-from custom_components.haeo.elements.inverter import (
-    CONF_MAX_POWER_EXPORT,
-    CONF_MAX_POWER_IMPORT,
-    INVERTER_DEVICE,
-    INVERTER_POWER_EXPORT,
-    INVERTER_POWER_IMPORT,
-)
 from custom_components.haeo.elements.grid import CONF_CONNECTION as CONF_CONNECTION_GRID
 from custom_components.haeo.elements.grid import (
     CONF_EXPORT_LIMIT,
@@ -80,6 +73,7 @@ from custom_components.haeo.elements.grid import (
     CONF_IMPORT_LIMIT,
     CONF_IMPORT_PRICE,
 )
+from custom_components.haeo.elements.inverter import CONF_MAX_POWER_EXPORT, CONF_MAX_POWER_IMPORT
 from custom_components.haeo.elements.photovoltaics import PHOTOVOLTAICS_POWER
 from custom_components.haeo.model import (
     OUTPUT_TYPE_COST,
