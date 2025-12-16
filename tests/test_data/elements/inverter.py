@@ -15,10 +15,10 @@ from custom_components.haeo.model.source_sink import SOURCE_SINK_POWER_BALANCE
 
 from .types import ElementConfigData, ElementConfigSchema, ElementValidCase, InvalidModelCase, InvalidSchemaCase
 
-# Single fully-typed pipeline case
+# Fully-typed pipeline cases
 VALID: Sequence[ElementValidCase[ElementConfigSchema, ElementConfigData]] = [
     {
-        "description": "Adapter mapping inverter case",
+        "description": "Adapter mapping inverter case with power limits",
         "element_type": "inverter",
         "schema": inverter_element.InverterConfigSchema(
             element_type="inverter",
@@ -74,6 +74,52 @@ VALID: Sequence[ElementValidCase[ElementConfigSchema, ElementConfigData]] = [
                 inverter_element.INVERTER_POWER_MAX_IMPORT: OutputData(type=OUTPUT_TYPE_POWER_LIMIT, unit="kW", values=(10.0,)),
                 inverter_element.INVERTER_POWER_MAX_EXPORT_PRICE: OutputData(type=OUTPUT_TYPE_SHADOW_PRICE, unit="$/kW", values=(0.01,)),
                 inverter_element.INVERTER_POWER_MAX_IMPORT_PRICE: OutputData(type=OUTPUT_TYPE_SHADOW_PRICE, unit="$/kW", values=(0.02,)),
+            }
+        },
+    },
+    {
+        "description": "Adapter mapping inverter case without power limits",
+        "element_type": "inverter",
+        "schema": inverter_element.InverterConfigSchema(
+            element_type="inverter",
+            name="inverter_unlimited",
+            connection="network",
+        ),
+        "data": inverter_element.InverterConfigData(
+            element_type="inverter",
+            name="inverter_unlimited",
+            connection="network",
+        ),
+        "model": [
+            {"element_type": "source_sink", "name": "inverter_unlimited", "is_source": False, "is_sink": False},
+            {
+                "element_type": "connection",
+                "name": "inverter_unlimited:connection",
+                "source": "inverter_unlimited",
+                "target": "network",
+                "max_power_source_target": None,
+                "max_power_target_source": None,
+                "efficiency_source_target": None,
+                "efficiency_target_source": None,
+            },
+        ],
+        "model_outputs": {
+            "inverter_unlimited": {
+                SOURCE_SINK_POWER_BALANCE: OutputData(type=OUTPUT_TYPE_SHADOW_PRICE, unit="$/kW", values=(0.0,)),
+            },
+            "inverter_unlimited:connection": {
+                # Only power flow outputs, no max power or shadow prices since limits not configured
+                connection.CONNECTION_POWER_SOURCE_TARGET: OutputData(type=OUTPUT_TYPE_POWER_FLOW, unit="kW", values=(5.0,), direction="+"),
+                connection.CONNECTION_POWER_TARGET_SOURCE: OutputData(type=OUTPUT_TYPE_POWER_FLOW, unit="kW", values=(3.0,), direction="-"),
+            },
+        },
+        "outputs": {
+            inverter_element.INVERTER_DEVICE: {
+                # Only core outputs, no max power or shadow prices since limits not configured
+                inverter_element.INVERTER_DC_BUS_POWER_BALANCE: OutputData(type=OUTPUT_TYPE_SHADOW_PRICE, unit="$/kW", values=(0.0,)),
+                inverter_element.INVERTER_POWER_EXPORT: OutputData(type=OUTPUT_TYPE_POWER, unit="kW", values=(5.0,), direction="+"),
+                inverter_element.INVERTER_POWER_IMPORT: OutputData(type=OUTPUT_TYPE_POWER, unit="kW", values=(3.0,), direction="-"),
+                inverter_element.INVERTER_POWER_ACTIVE: OutputData(type=OUTPUT_TYPE_POWER_FLOW, unit="kW", values=(2.0,), direction=None),
             }
         },
     },
