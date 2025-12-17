@@ -7,6 +7,7 @@ from homeassistant.config_entries import ConfigSubentryFlow, SubentryFlowResult
 from custom_components.haeo.const import CONF_ELEMENT_TYPE, CONF_NAME
 from custom_components.haeo.data.loader.extractors import extract_entity_metadata
 from custom_components.haeo.elements import ElementConfigSchema, is_element_config_schema
+from custom_components.haeo.model import ELEMENT_TYPE_CONNECTION
 from custom_components.haeo.network import evaluate_network_connectivity
 from custom_components.haeo.schema import schema_for_type
 from custom_components.haeo.validation import collect_participant_configs
@@ -122,6 +123,16 @@ class ElementSubentryFlow(ConfigSubentryFlow):
     def _get_element_names(self) -> list[str]:
         """Return all element names available as connection targets, excluding the current subentry."""
         return list(self._get_other_element_entries().keys())
+
+    def _get_non_connection_element_names(self) -> list[str]:
+        """Return participant names available for connection endpoints excluding the current subentry.
+
+        This method filters out connection-type elements, which is needed for raw graph mode
+        where users can manually configure connections between elements.
+        """
+        return [
+            k for k, v in self._get_other_element_entries().items() if v[CONF_ELEMENT_TYPE] != ELEMENT_TYPE_CONNECTION
+        ]
 
     def _get_other_element_entries(self) -> dict[str, ElementConfigSchema]:
         """Return other subentries which are Element participants."""

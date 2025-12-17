@@ -145,13 +145,13 @@
       "step": {
         "user": {
           "title": "Add Inverter",
-          "description": "Set up an inverter with DC/AC coupling",
+          "description": "Set up an inverter to connect DC sources (batteries, solar) to the AC network",
           "data": {
-            "connection": "AC Connection",
-            "efficiency_export": "Export Efficiency (DC to AC) (%)",
-            "efficiency_import": "Import Efficiency (AC to DC) (%)",
-            "max_power_export": "Maximum Export Power (DC to AC)",
-            "max_power_import": "Maximum Import Power (AC to DC)",
+            "connection": "Connection",
+            "efficiency_export": "Export Efficiency",
+            "efficiency_import": "Import Efficiency",
+            "max_power_export": "Maximum Export Power",
+            "max_power_import": "Maximum Import Power",
             "name": "Inverter Name"
           }
         },
@@ -159,11 +159,11 @@
           "title": "Edit Inverter",
           "description": "Update inverter configuration",
           "data": {
-            "connection": "AC Connection",
-            "efficiency_export": "Export Efficiency (DC to AC) (%)",
-            "efficiency_import": "Import Efficiency (AC to DC) (%)",
-            "max_power_export": "Maximum Export Power (DC to AC)",
-            "max_power_import": "Maximum Import Power (AC to DC)",
+            "connection": "Connection",
+            "efficiency_export": "Export Efficiency",
+            "efficiency_import": "Import Efficiency",
+            "max_power_export": "Maximum Export Power",
+            "max_power_import": "Maximum Import Power",
             "name": "Inverter Name"
           }
         }
@@ -259,10 +259,10 @@
       "grid_power_max_import_price": { "name": "Max Import Price (Shadow)" },
       "grid_price_export": { "name": "Export Price" },
       "grid_price_import": { "name": "Import Price" },
-      "inverter_dc_bus_power_balance": { "name": "DC Bus Power Balance" },
+      "inverter_dc_bus_power_balance": { "name": "Power Balance" },
       "inverter_power_active": { "name": "Active Power" },
-      "inverter_power_export": { "name": "Export Power (DC to AC)" },
-      "inverter_power_import": { "name": "Import Power (AC to DC)" },
+      "inverter_power_export": { "name": "Export Power" },
+      "inverter_power_import": { "name": "Import Power" },
       "inverter_power_max_export": { "name": "Max Export Power" },
       "inverter_power_max_export_price": { "name": "Max Export Shadow Price" },
       "inverter_power_max_import": { "name": "Max Import Power" },

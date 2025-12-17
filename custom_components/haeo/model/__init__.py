@@ -1,6 +1,7 @@
 """HAEO energy modeling components."""
 
 from .const import (
+    ELEMENT_TYPE_CONNECTION,
     OUTPUT_TYPE_COST,
     OUTPUT_TYPE_DURATION,
     OUTPUT_TYPE_ENERGY,
@@ -19,6 +20,7 @@ from .output_data import OutputData
 from .output_names import ModelOutputName
 
 __all__ = [
+    "ELEMENT_TYPE_CONNECTION",
     "OUTPUT_TYPE_COST",
     "OUTPUT_TYPE_DURATION",
     "OUTPUT_TYPE_ENERGY",

@@ -7,7 +7,6 @@ and the inverter connection to the AC network.
 """
 
 from collections.abc import Mapping
-from dataclasses import replace
 from typing import Any, Final, Literal, NotRequired, TypedDict
 
 from custom_components.haeo.model import ModelOutputName
@@ -19,7 +18,7 @@ from custom_components.haeo.model.connection import (
     CONNECTION_SHADOW_POWER_MAX_SOURCE_TARGET,
     CONNECTION_SHADOW_POWER_MAX_TARGET_SOURCE,
 )
-from custom_components.haeo.model.const import OUTPUT_TYPE_POWER, OUTPUT_TYPE_POWER_FLOW
+from custom_components.haeo.model.const import OUTPUT_TYPE_POWER_FLOW
 from custom_components.haeo.model.output_data import OutputData
 from custom_components.haeo.model.source_sink import SOURCE_SINK_POWER_BALANCE
 from custom_components.haeo.schema.fields import (
@@ -27,8 +26,8 @@ from custom_components.haeo.schema.fields import (
     ElementNameFieldSchema,
     NameFieldData,
     NameFieldSchema,
-    PercentageFieldData,
-    PercentageFieldSchema,
+    PercentageSensorFieldData,
+    PercentageSensorFieldSchema,
     PowerSensorFieldData,
     PowerSensorFieldSchema,
 )
@@ -85,8 +84,8 @@ class InverterConfigSchema(TypedDict):
     # Optional fields
     max_power_export: NotRequired[PowerSensorFieldSchema]  # DC to AC (export to grid)
     max_power_import: NotRequired[PowerSensorFieldSchema]  # AC to DC (import from grid)
-    efficiency_export: NotRequired[PercentageFieldSchema]  # DC to AC efficiency
-    efficiency_import: NotRequired[PercentageFieldSchema]  # AC to DC efficiency
+    efficiency_export: NotRequired[PercentageSensorFieldSchema]  # DC to AC efficiency
+    efficiency_import: NotRequired[PercentageSensorFieldSchema]  # AC to DC efficiency
 
 
 class InverterConfigData(TypedDict):
@@ -99,8 +98,8 @@ class InverterConfigData(TypedDict):
     # Optional fields
     max_power_export: NotRequired[PowerSensorFieldData]  # DC to AC (export to grid)
     max_power_import: NotRequired[PowerSensorFieldData]  # AC to DC (import from grid)
-    efficiency_export: NotRequired[PercentageFieldData]  # DC to AC efficiency
-    efficiency_import: NotRequired[PercentageFieldData]  # AC to DC efficiency
+    efficiency_export: NotRequired[PercentageSensorFieldData]  # DC to AC efficiency
+    efficiency_import: NotRequired[PercentageSensorFieldData]  # AC to DC efficiency
 
 
 CONFIG_DEFAULTS: dict[str, Any] = {}
@@ -147,16 +146,13 @@ def outputs(
 
     # source_target = DC to AC = EXPORT
     # target_source = AC to DC = IMPORT
-    inverter_outputs[INVERTER_POWER_EXPORT] = replace(
-        connection[CONNECTION_POWER_SOURCE_TARGET], type=OUTPUT_TYPE_POWER
-    )
-    inverter_outputs[INVERTER_POWER_IMPORT] = replace(
-        connection[CONNECTION_POWER_TARGET_SOURCE], type=OUTPUT_TYPE_POWER
-    )
+    inverter_outputs[INVERTER_POWER_EXPORT] = connection[CONNECTION_POWER_SOURCE_TARGET]
+    inverter_outputs[INVERTER_POWER_IMPORT] = connection[CONNECTION_POWER_TARGET_SOURCE]
 
     # Active power (export - import, positive = exporting to AC)
-    inverter_outputs[INVERTER_POWER_ACTIVE] = replace(
-        connection[CONNECTION_POWER_SOURCE_TARGET],
+    inverter_outputs[INVERTER_POWER_ACTIVE] = OutputData(
+        type=OUTPUT_TYPE_POWER_FLOW,
+        unit="kW",
         values=[
             exp - imp
             for exp, imp in zip(
@@ -166,7 +162,6 @@ def outputs(
             )
         ],
         direction=None,
-        type=OUTPUT_TYPE_POWER_FLOW,
     )
 
     # Optional outputs (only present if configured)

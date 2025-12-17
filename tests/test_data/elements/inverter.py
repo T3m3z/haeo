@@ -5,7 +5,6 @@ from collections.abc import Sequence
 from custom_components.haeo.elements import inverter as inverter_element
 from custom_components.haeo.model import connection
 from custom_components.haeo.model.const import (
-    OUTPUT_TYPE_POWER,
     OUTPUT_TYPE_POWER_FLOW,
     OUTPUT_TYPE_POWER_LIMIT,
     OUTPUT_TYPE_SHADOW_PRICE,
@@ -67,8 +66,8 @@ VALID: Sequence[ElementValidCase[ElementConfigSchema, ElementConfigData]] = [
         "outputs": {
             inverter_element.INVERTER_DEVICE: {
                 inverter_element.INVERTER_DC_BUS_POWER_BALANCE: OutputData(type=OUTPUT_TYPE_SHADOW_PRICE, unit="$/kW", values=(0.0,)),
-                inverter_element.INVERTER_POWER_EXPORT: OutputData(type=OUTPUT_TYPE_POWER, unit="kW", values=(5.0,), direction="+"),
-                inverter_element.INVERTER_POWER_IMPORT: OutputData(type=OUTPUT_TYPE_POWER, unit="kW", values=(3.0,), direction="-"),
+                inverter_element.INVERTER_POWER_EXPORT: OutputData(type=OUTPUT_TYPE_POWER_FLOW, unit="kW", values=(5.0,), direction="+"),
+                inverter_element.INVERTER_POWER_IMPORT: OutputData(type=OUTPUT_TYPE_POWER_FLOW, unit="kW", values=(3.0,), direction="-"),
                 inverter_element.INVERTER_POWER_ACTIVE: OutputData(type=OUTPUT_TYPE_POWER_FLOW, unit="kW", values=(2.0,), direction=None),
                 inverter_element.INVERTER_POWER_MAX_EXPORT: OutputData(type=OUTPUT_TYPE_POWER_LIMIT, unit="kW", values=(10.0,)),
                 inverter_element.INVERTER_POWER_MAX_IMPORT: OutputData(type=OUTPUT_TYPE_POWER_LIMIT, unit="kW", values=(10.0,)),
@@ -117,8 +116,8 @@ VALID: Sequence[ElementValidCase[ElementConfigSchema, ElementConfigData]] = [
             inverter_element.INVERTER_DEVICE: {
                 # Only core outputs, no max power or shadow prices since limits not configured
                 inverter_element.INVERTER_DC_BUS_POWER_BALANCE: OutputData(type=OUTPUT_TYPE_SHADOW_PRICE, unit="$/kW", values=(0.0,)),
-                inverter_element.INVERTER_POWER_EXPORT: OutputData(type=OUTPUT_TYPE_POWER, unit="kW", values=(5.0,), direction="+"),
-                inverter_element.INVERTER_POWER_IMPORT: OutputData(type=OUTPUT_TYPE_POWER, unit="kW", values=(3.0,), direction="-"),
+                inverter_element.INVERTER_POWER_EXPORT: OutputData(type=OUTPUT_TYPE_POWER_FLOW, unit="kW", values=(5.0,), direction="+"),
+                inverter_element.INVERTER_POWER_IMPORT: OutputData(type=OUTPUT_TYPE_POWER_FLOW, unit="kW", values=(3.0,), direction="-"),
                 inverter_element.INVERTER_POWER_ACTIVE: OutputData(type=OUTPUT_TYPE_POWER_FLOW, unit="kW", values=(2.0,), direction=None),
             }
         },

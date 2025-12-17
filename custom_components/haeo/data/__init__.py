@@ -20,12 +20,9 @@ from homeassistant.core import HomeAssistant
 
 from custom_components.haeo.const import CONF_ELEMENT_TYPE, ELEMENT_TYPE_NETWORK
 from custom_components.haeo.elements import ELEMENT_TYPES, ElementConfigData, ElementConfigSchema
-from custom_components.haeo.model import Network
+from custom_components.haeo.model import ELEMENT_TYPE_CONNECTION, Network
 from custom_components.haeo.schema import available as config_available
 from custom_components.haeo.schema import load as config_load
-
-# Model element type for connections (used for sorting)
-MODEL_ELEMENT_TYPE_CONNECTION = "connection"
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -123,7 +120,7 @@ async def load_network(
     # This ensures connection source/target elements exist when connections are registered
     sorted_model_elements = sorted(
         all_model_elements,
-        key=lambda e: e.get("element_type") == MODEL_ELEMENT_TYPE_CONNECTION,
+        key=lambda e: e.get("element_type") == ELEMENT_TYPE_CONNECTION,
     )
 
     # Add all model elements to network in correct order

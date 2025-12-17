@@ -2,6 +2,9 @@
 
 from typing import Final, Literal
 
+# Model element types (used for sorting and validation across layers)
+ELEMENT_TYPE_CONNECTION: Final = "connection"
+
 type OutputType = Literal[
     "power",
     "power_flow",
