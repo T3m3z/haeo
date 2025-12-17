@@ -22,7 +22,7 @@ from custom_components.haeo.const import (
     DOMAIN,
     INTEGRATION_TYPE_HUB,
 )
-from custom_components.haeo.elements import ELEMENT_TYPES, ELEMENT_TYPE_NETWORK
+from custom_components.haeo.elements import ELEMENT_TYPE_NETWORK, ELEMENT_TYPES
 
 from . import get_network_config_schema
 from .element import create_subentry_flow_class

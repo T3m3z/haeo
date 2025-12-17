@@ -36,12 +36,6 @@ from custom_components.haeo.const import (
     DOMAIN,
     INTEGRATION_TYPE_HUB,
 )
-from custom_components.haeo.elements import ELEMENT_TYPE_NETWORK
-from custom_components.haeo.elements.network import (
-    OUTPUT_NAME_OPTIMIZATION_COST,
-    OUTPUT_NAME_OPTIMIZATION_DURATION,
-    OUTPUT_NAME_OPTIMIZATION_STATUS,
-)
 from custom_components.haeo.coordinator import (
     STATUS_OPTIONS,
     ForecastPoint,
@@ -54,6 +48,7 @@ from custom_components.haeo.elements import (
     ELEMENT_TYPE_BATTERY,
     ELEMENT_TYPE_GRID,
     ELEMENT_TYPE_INVERTER,
+    ELEMENT_TYPE_NETWORK,
     ELEMENT_TYPES,
     ElementConfigSchema,
 )
@@ -76,6 +71,11 @@ from custom_components.haeo.elements.grid import (
     CONF_IMPORT_PRICE,
 )
 from custom_components.haeo.elements.inverter import CONF_MAX_POWER_EXPORT, CONF_MAX_POWER_IMPORT
+from custom_components.haeo.elements.network import (
+    OUTPUT_NAME_OPTIMIZATION_COST,
+    OUTPUT_NAME_OPTIMIZATION_DURATION,
+    OUTPUT_NAME_OPTIMIZATION_STATUS,
+)
 from custom_components.haeo.elements.photovoltaics import PHOTOVOLTAICS_POWER
 from custom_components.haeo.model import (
     OUTPUT_TYPE_COST,

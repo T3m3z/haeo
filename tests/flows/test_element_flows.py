@@ -37,8 +37,8 @@ from custom_components.haeo.const import (
     INTEGRATION_TYPE_HUB,
 )
 from custom_components.haeo.elements import (
-    ELEMENT_TYPES,
     ELEMENT_TYPE_NETWORK,
+    ELEMENT_TYPES,
     ElementOutputName,
     ElementRegistryEntry,
     ElementType,

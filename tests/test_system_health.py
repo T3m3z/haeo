@@ -25,12 +25,12 @@ from custom_components.haeo.const import (
     DEFAULT_TIER_4_COUNT,
     DEFAULT_TIER_4_DURATION,
 )
+from custom_components.haeo.coordinator import CoordinatorOutput, HaeoDataUpdateCoordinator
 from custom_components.haeo.elements.network import (
     OUTPUT_NAME_OPTIMIZATION_COST,
     OUTPUT_NAME_OPTIMIZATION_DURATION,
     OUTPUT_NAME_OPTIMIZATION_STATUS,
 )
-from custom_components.haeo.coordinator import CoordinatorOutput, HaeoDataUpdateCoordinator
 from custom_components.haeo.model.const import OUTPUT_TYPE_COST, OUTPUT_TYPE_DURATION, OUTPUT_TYPE_STATUS
 from custom_components.haeo.system_health import async_register, async_system_health_info
 

@@ -14,19 +14,12 @@ from homeassistant.helpers.device_registry import DeviceEntry
 import pytest
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
-from custom_components.haeo.const import (
-    CONF_ELEMENT_TYPE,
-    CONF_NAME,
-    DOMAIN,
-)
-from custom_components.haeo.elements import ELEMENT_TYPE_NETWORK
-from custom_components.haeo.elements.network import (
-    OUTPUT_NAME_OPTIMIZATION_DURATION,
-    OUTPUT_NAME_OPTIMIZATION_STATUS,
-)
+from custom_components.haeo.const import CONF_ELEMENT_TYPE, CONF_NAME, DOMAIN
 from custom_components.haeo.coordinator import CoordinatorOutput, ForecastPoint, HaeoDataUpdateCoordinator
+from custom_components.haeo.elements import ELEMENT_TYPE_NETWORK
 from custom_components.haeo.elements.battery import ELEMENT_TYPE as BATTERY_TYPE
 from custom_components.haeo.elements.load import LOAD_POWER
+from custom_components.haeo.elements.network import OUTPUT_NAME_OPTIMIZATION_DURATION, OUTPUT_NAME_OPTIMIZATION_STATUS
 from custom_components.haeo.model import OUTPUT_TYPE_DURATION, OUTPUT_TYPE_POWER, OUTPUT_TYPE_STATUS, OutputType
 from custom_components.haeo.sensors import async_setup_entry
 from custom_components.haeo.sensors.sensor import HaeoSensor

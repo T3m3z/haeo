@@ -29,8 +29,8 @@ from .const import (
     OPTIMIZATION_STATUS_SUCCESS,
 )
 from .elements import (
-    ELEMENT_TYPES,
     ELEMENT_TYPE_NETWORK,
+    ELEMENT_TYPES,
     ElementConfigSchema,
     ElementDeviceName,
     ElementOutputName,
