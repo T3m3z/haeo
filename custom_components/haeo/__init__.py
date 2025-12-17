@@ -9,9 +9,12 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers import device_registry as dr
 
 from custom_components.haeo.const import CONF_ELEMENT_TYPE, CONF_NAME
-from custom_components.haeo.elements import ELEMENT_TYPE_NETWORK
 
 from .coordinator import HaeoDataUpdateCoordinator
+
+# Network element type - defined here to avoid circular imports
+# (elements → schema → data → elements)
+ELEMENT_TYPE_NETWORK = "network"
 
 _LOGGER = logging.getLogger(__name__)
 
