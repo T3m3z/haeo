@@ -9,11 +9,11 @@ from . import ForecastSeries
 _SECONDS_PER_DAY: Final = 24 * 60 * 60
 
 
-def normalize_forecast_cycle(forecast_series: ForecastSeries, current_time: int) -> tuple[ForecastSeries, int]:
+def normalize_forecast_cycle(forecast_series: ForecastSeries, current_time: float) -> tuple[ForecastSeries, float]:
     """Return a 24-hour aligned forecast block starting at ``current_time``."""
 
     # First take the forecast and repeat it as needed to make it a multiple of 24 hours long
-    forecast = np.array(forecast_series, dtype=[("timestamp", np.int64), ("value", np.float64)])
+    forecast = np.array(forecast_series, dtype=[("timestamp", np.float64), ("value", np.float64)])
     cover_days = max(1, np.ceil((forecast[-1]["timestamp"] - forecast[0]["timestamp"]) / _SECONDS_PER_DAY))
     cover_seconds = cover_days * _SECONDS_PER_DAY
     end_time = forecast[-1]["timestamp"]

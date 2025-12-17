@@ -8,7 +8,19 @@ from homeassistant.helpers import issue_registry as ir
 import pytest
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
-from custom_components.haeo.const import CONF_ELEMENT_TYPE, CONF_NAME, DOMAIN
+from custom_components.haeo.const import (
+    CONF_ELEMENT_TYPE,
+    CONF_NAME,
+    CONF_TIER_1_COUNT,
+    CONF_TIER_1_DURATION,
+    CONF_TIER_2_COUNT,
+    CONF_TIER_2_DURATION,
+    CONF_TIER_3_COUNT,
+    CONF_TIER_3_DURATION,
+    CONF_TIER_4_COUNT,
+    CONF_TIER_4_DURATION,
+    DOMAIN,
+)
 from custom_components.haeo.elements import ELEMENT_TYPE_GRID, ELEMENT_TYPE_LOAD
 from custom_components.haeo.elements.grid import CONF_CONNECTION, CONF_EXPORT_PRICE, CONF_IMPORT_PRICE
 from custom_components.haeo.elements.load import CONF_FORECAST
@@ -21,7 +33,17 @@ def config_entry(hass: HomeAssistant) -> MockConfigEntry:
 
     entry = MockConfigEntry(
         domain=DOMAIN,
-        data={CONF_NAME: "Test Hub"},
+        data={
+            CONF_NAME: "Test Hub",
+            CONF_TIER_1_COUNT: 2,
+            CONF_TIER_1_DURATION: 30,
+            CONF_TIER_2_COUNT: 0,
+            CONF_TIER_2_DURATION: 60,
+            CONF_TIER_3_COUNT: 0,
+            CONF_TIER_3_DURATION: 30,
+            CONF_TIER_4_COUNT: 0,
+            CONF_TIER_4_DURATION: 60,
+        },
         entry_id="test_entry",
         title="Test Hub",
     )
@@ -29,9 +51,30 @@ def config_entry(hass: HomeAssistant) -> MockConfigEntry:
     return entry
 
 
+@pytest.fixture
+def setup_sensors(hass: HomeAssistant) -> None:
+    """Set up mock sensors with forecast data for tests."""
+    hass.states.async_set(
+        "sensor.import_price",
+        "0.30",
+        {"forecast": [{"start_time": "2025-01-01T00:00:00+00:00", "price": 0.30}]},
+    )
+    hass.states.async_set(
+        "sensor.export_price",
+        "0.10",
+        {"forecast": [{"start_time": "2025-01-01T00:00:00+00:00", "price": 0.10}]},
+    )
+    hass.states.async_set(
+        "sensor.load_forecast",
+        "1.0",
+        {"forecast": [{"start_time": "2025-01-01T00:00:00+00:00", "pv_estimate": 1.0}]},
+    )
+
+
 async def test_evaluate_network_connectivity_connected(
     hass: HomeAssistant,
     config_entry: MockConfigEntry,
+    setup_sensors: None,
 ) -> None:
     """Network with a grid connected to network should be considered connected."""
 
@@ -62,6 +105,7 @@ async def test_evaluate_network_connectivity_connected(
 async def test_evaluate_network_connectivity_disconnected(
     hass: HomeAssistant,
     config_entry: MockConfigEntry,
+    setup_sensors: None,
 ) -> None:
     """Network with isolated elements should create a repair issue."""
 
@@ -109,6 +153,7 @@ async def test_evaluate_network_connectivity_disconnected(
 async def test_evaluate_network_connectivity_resolves_issue(
     hass: HomeAssistant,
     config_entry: MockConfigEntry,
+    setup_sensors: None,
 ) -> None:
     """Validation should clear the issue when connectivity is restored."""
 
