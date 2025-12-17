@@ -25,8 +25,8 @@ VALID: Sequence[ElementValidCase[ElementConfigSchema, ElementConfigData]] = [
             connection="network",
             max_power_export=["sensor.max_power"],
             max_power_import=["sensor.max_power"],
-            efficiency_export=97.0,
-            efficiency_import=96.0,
+            efficiency_export="sensor.efficiency_export",
+            efficiency_import="sensor.efficiency_import",
         ),
         "data": inverter_element.InverterConfigData(
             element_type="inverter",
@@ -34,8 +34,8 @@ VALID: Sequence[ElementValidCase[ElementConfigSchema, ElementConfigData]] = [
             connection="network",
             max_power_export=[10.0],
             max_power_import=[10.0],
-            efficiency_export=97.0,
-            efficiency_import=96.0,
+            efficiency_export=[97.0],
+            efficiency_import=[96.0],
         ),
         "model": [
             {"element_type": "source_sink", "name": "inverter_main", "is_source": False, "is_sink": False},
@@ -46,8 +46,8 @@ VALID: Sequence[ElementValidCase[ElementConfigSchema, ElementConfigData]] = [
                 "target": "network",
                 "max_power_source_target": [10.0],
                 "max_power_target_source": [10.0],
-                "efficiency_source_target": 97.0,
-                "efficiency_target_source": 96.0,
+                "efficiency_source_target": [97.0],
+                "efficiency_target_source": [96.0],
             },
         ],
         "model_outputs": {
@@ -124,11 +124,11 @@ VALID: Sequence[ElementValidCase[ElementConfigSchema, ElementConfigData]] = [
     },
 ]
 
-# Invalid schema-only cases
+# Invalid schema-only cases (deliberately invalid for testing schema validation)
 INVALID_SCHEMA: Sequence[InvalidSchemaCase[ElementConfigSchema]] = [
     {
         "description": "Inverter negative power limit",
-        "schema": {
+        "schema": {  # pyright: ignore[reportAssignmentType]
             "element_type": "inverter",
             "name": "inverter_bad",
             "connection": "network",

@@ -130,8 +130,11 @@ class ElementSubentryFlow(ConfigSubentryFlow):
         This method filters out connection-type elements, which is needed for raw graph mode
         where users can manually configure connections between elements.
         """
+        # Note: Current element types don't include "connection" but this filter is for future raw graph mode
         return [
-            k for k, v in self._get_other_element_entries().items() if v[CONF_ELEMENT_TYPE] != ELEMENT_TYPE_CONNECTION
+            k
+            for k, v in self._get_other_element_entries().items()
+            if str(v[CONF_ELEMENT_TYPE]) != ELEMENT_TYPE_CONNECTION
         ]
 
     def _get_other_element_entries(self) -> dict[str, ElementConfigSchema]:
