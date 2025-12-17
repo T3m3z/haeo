@@ -149,22 +149,52 @@ class ElementSubentryFlow(ConfigSubentryFlow):
                     return name
         return None
 
+    def _get_first_inverter_name(self) -> str | None:
+        """Return the name of the first inverter subentry, if any exist."""
+        hub = self._get_entry()
+        for subentry in hub.subentries.values():
+            if subentry.subentry_type == "inverter":
+                name = subentry.data.get(CONF_NAME)
+                if isinstance(name, str):
+                    return name
+        return None
+
     def _get_suggested_values(self) -> dict[str, Any]:
         """Return suggested values for the form, including dynamic defaults.
 
-        Merges static defaults with dynamic values like the network name
-        for connection fields.
+        Merges static defaults with dynamic values like connection targets.
+        Connection defaults are context-aware:
+        - Batteries and PV default to an existing inverter (DC bus connection)
+        - Inverters and other elements default to the network (AC connection)
         """
         suggested = dict(self.defaults)
 
         # If the schema has a 'connection' field and no default is set,
-        # suggest the network as the default connection target
+        # suggest an appropriate connection target based on element type
         if "connection" not in suggested:
-            network_name = self._get_network_name()
-            if network_name:
-                suggested["connection"] = network_name
+            connection_default = self._get_default_connection()
+            if connection_default:
+                suggested["connection"] = connection_default
 
         return suggested
+
+    def _get_default_connection(self) -> str | None:
+        """Return the best default connection target for this element type.
+
+        - Batteries and PV connect to inverters (DC bus)
+        - Inverters and other elements connect to the network (AC)
+        """
+        # Elements that typically connect to an inverter's DC bus
+        dc_bus_elements = {"battery", "photovoltaics"}
+
+        if self.element_type in dc_bus_elements:
+            # Look for an existing inverter to connect to
+            inverter_name = self._get_first_inverter_name()
+            if inverter_name:
+                return inverter_name
+
+        # Fall back to network for inverters and when no inverter exists
+        return self._get_network_name()
 
     def _get_non_connection_element_names(self) -> list[str]:
         """Return participant names available for connection endpoints excluding the current subentry.
