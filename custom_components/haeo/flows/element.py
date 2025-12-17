@@ -64,7 +64,10 @@ class ElementSubentryFlow(ConfigSubentryFlow):
             participants=self._get_element_names(),
             current_element_name=None,
         )
-        schema = self.add_suggested_values_to_schema(schema, self.defaults)
+
+        # Merge defaults with dynamic network connection suggestion
+        suggested_values = self._get_suggested_values()
+        schema = self.add_suggested_values_to_schema(schema, suggested_values)
 
         return self.async_show_form(step_id="user", data_schema=schema, errors=errors)
 
@@ -145,6 +148,23 @@ class ElementSubentryFlow(ConfigSubentryFlow):
                 if isinstance(name, str):
                     return name
         return None
+
+    def _get_suggested_values(self) -> dict[str, Any]:
+        """Return suggested values for the form, including dynamic defaults.
+
+        Merges static defaults with dynamic values like the network name
+        for connection fields.
+        """
+        suggested = dict(self.defaults)
+
+        # If the schema has a 'connection' field and no default is set,
+        # suggest the network as the default connection target
+        if "connection" not in suggested:
+            network_name = self._get_network_name()
+            if network_name:
+                suggested["connection"] = network_name
+
+        return suggested
 
     def _get_non_connection_element_names(self) -> list[str]:
         """Return participant names available for connection endpoints excluding the current subentry.
