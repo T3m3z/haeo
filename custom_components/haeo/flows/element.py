@@ -4,7 +4,7 @@ from typing import Any, cast
 
 from homeassistant.config_entries import ConfigSubentryFlow, SubentryFlowResult
 
-from custom_components.haeo.const import CONF_ELEMENT_TYPE, CONF_NAME
+from custom_components.haeo.const import CONF_ELEMENT_TYPE, CONF_NAME, ELEMENT_TYPE_NETWORK
 from custom_components.haeo.data.loader.extractors import extract_entity_metadata
 from custom_components.haeo.elements import ElementConfigSchema, is_element_config_schema
 from custom_components.haeo.model import ELEMENT_TYPE_CONNECTION
@@ -121,8 +121,30 @@ class ElementSubentryFlow(ConfigSubentryFlow):
         }
 
     def _get_element_names(self) -> list[str]:
-        """Return all element names available as connection targets, excluding the current subentry."""
-        return list(self._get_other_element_entries().keys())
+        """Return all element names available as connection targets, excluding the current subentry.
+
+        This includes both regular elements (batteries, grids, etc.) and the network subentry,
+        which is the primary connection target for inverters.
+        """
+        names = list(self._get_other_element_entries().keys())
+
+        # Also include the network subentry as a connection target
+        network_name = self._get_network_name()
+        if network_name and network_name not in names:
+            # Insert network at the beginning since it's the most common connection target
+            names.insert(0, network_name)
+
+        return names
+
+    def _get_network_name(self) -> str | None:
+        """Return the network name from the network subentry, if it exists."""
+        hub = self._get_entry()
+        for subentry in hub.subentries.values():
+            if subentry.subentry_type == ELEMENT_TYPE_NETWORK:
+                name = subentry.data.get(CONF_NAME)
+                if isinstance(name, str):
+                    return name
+        return None
 
     def _get_non_connection_element_names(self) -> list[str]:
         """Return participant names available for connection endpoints excluding the current subentry.
