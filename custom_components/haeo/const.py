@@ -1,6 +1,6 @@
 """Constants for the Home Assistant Energy Optimizer integration."""
 
-from typing import Final, Literal
+from typing import Final
 
 # Integration domain
 DOMAIN: Final = "haeo"
@@ -14,8 +14,6 @@ CONF_INTEGRATION_TYPE: Final = "integration_type"
 CONF_ELEMENT_TYPE: Final = "element_type"
 CONF_UPDATE_INTERVAL_MINUTES: Final = "update_interval_minutes"
 CONF_DEBOUNCE_SECONDS: Final = "debounce_seconds"
-
-ELEMENT_TYPE_NETWORK: Final = "network"
 
 # Interval tier configuration (4 tiers with count and duration each)
 # Each tier specifies: count = number of intervals, duration = minutes per interval
@@ -51,23 +49,3 @@ DEFAULT_DEBOUNCE_SECONDS: Final = 2  # 2 seconds debounce window
 OPTIMIZATION_STATUS_SUCCESS: Final = "success"
 OPTIMIZATION_STATUS_FAILED: Final = "failed"
 OPTIMIZATION_STATUS_PENDING: Final = "pending"
-
-
-type NetworkOutputName = Literal[
-    "network_optimization_cost",
-    "network_optimization_status",
-    "network_optimization_duration",
-]
-NETWORK_OUTPUT_NAMES: Final[frozenset[NetworkOutputName]] = frozenset(
-    [
-        OUTPUT_NAME_OPTIMIZATION_COST := "network_optimization_cost",
-        OUTPUT_NAME_OPTIMIZATION_STATUS := "network_optimization_status",
-        OUTPUT_NAME_OPTIMIZATION_DURATION := "network_optimization_duration",
-    ]
-)
-
-type NetworkDeviceName = Literal["network"]
-
-NETWORK_DEVICE_NAMES: Final[frozenset[NetworkDeviceName]] = frozenset(
-    (NETWORK_DEVICE_NETWORK := "network",),
-)

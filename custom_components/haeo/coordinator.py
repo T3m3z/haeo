@@ -24,21 +24,23 @@ from .const import (
     DEFAULT_DEBOUNCE_SECONDS,
     DEFAULT_UPDATE_INTERVAL_MINUTES,
     DOMAIN,
-    ELEMENT_TYPE_NETWORK,
     OPTIMIZATION_STATUS_FAILED,
     OPTIMIZATION_STATUS_PENDING,
     OPTIMIZATION_STATUS_SUCCESS,
-    OUTPUT_NAME_OPTIMIZATION_COST,
-    OUTPUT_NAME_OPTIMIZATION_DURATION,
-    OUTPUT_NAME_OPTIMIZATION_STATUS,
-    NetworkOutputName,
 )
 from .elements import (
     ELEMENT_TYPES,
+    ELEMENT_TYPE_NETWORK,
     ElementConfigSchema,
     ElementDeviceName,
     ElementOutputName,
     collect_element_subentries,
+)
+from .elements.network import (
+    OUTPUT_NAME_OPTIMIZATION_COST,
+    OUTPUT_NAME_OPTIMIZATION_DURATION,
+    OUTPUT_NAME_OPTIMIZATION_STATUS,
+    NetworkHubOutputName,
 )
 from .model import (
     OUTPUT_TYPE_COST,
@@ -236,7 +238,7 @@ def _build_coordinator_output(
     )
 
 
-type SubentryDevices = dict[ElementDeviceName, dict[ElementOutputName | NetworkOutputName, CoordinatorOutput]]
+type SubentryDevices = dict[ElementDeviceName, dict[ElementOutputName | NetworkHubOutputName, CoordinatorOutput]]
 type CoordinatorData = dict[str, SubentryDevices]
 
 
@@ -346,7 +348,7 @@ class HaeoDataUpdateCoordinator(DataUpdateCoordinator[CoordinatorData]):
         # Persist runtime state for diagnostics and system health
         self.network = network
 
-        network_output_data: dict[NetworkOutputName, OutputData] = {
+        network_output_data: dict[NetworkHubOutputName, OutputData] = {
             OUTPUT_NAME_OPTIMIZATION_COST: OutputData(OUTPUT_TYPE_COST, unit=self.hass.config.currency, values=(cost,)),
             OUTPUT_NAME_OPTIMIZATION_STATUS: OutputData(
                 OUTPUT_TYPE_STATUS, unit=None, values=(OPTIMIZATION_STATUS_SUCCESS,)

@@ -18,7 +18,7 @@ from typing import Any
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 
-from custom_components.haeo.const import CONF_ELEMENT_TYPE, ELEMENT_TYPE_NETWORK
+from custom_components.haeo.const import CONF_ELEMENT_TYPE
 from custom_components.haeo.elements import ELEMENT_TYPES, ElementConfigData, ElementConfigSchema
 from custom_components.haeo.model import ELEMENT_TYPE_CONNECTION, Network
 from custom_components.haeo.schema import available as config_available
@@ -98,23 +98,14 @@ async def load_network(
     net = Network(name=f"haeo_network_{entry.entry_id}", periods=periods_hours)
 
     # Collect all model elements from all config elements
+    # The network element is now a proper element type, so it gets processed here
+    # along with batteries, inverters, etc.
     all_model_elements: list[dict[str, Any]] = []
     for loaded_params in participants.values():
         # Use registry entry to create model elements from configuration element
         element_type = loaded_params[CONF_ELEMENT_TYPE]
         model_elements = ELEMENT_TYPES[element_type].create_model_elements(loaded_params)
         all_model_elements.extend(model_elements)
-
-    # Add the network element itself as a SourceSink (junction point for the network)
-    # This provides a central connection point (the "grid" or "main bus") for other elements.
-    all_model_elements.append(
-        {
-            "element_type": "source_sink",
-            "name": ELEMENT_TYPE_NETWORK,
-            "is_source": False,
-            "is_sink": False,
-        }
-    )
 
     # Sort all model elements so connections are added last
     # This ensures connection source/target elements exist when connections are registered

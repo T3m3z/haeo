@@ -34,11 +34,11 @@ from custom_components.haeo.const import (
     DEFAULT_TIER_4_COUNT,
     DEFAULT_TIER_4_DURATION,
     DOMAIN,
-    ELEMENT_TYPE_NETWORK,
     INTEGRATION_TYPE_HUB,
 )
 from custom_components.haeo.elements import (
     ELEMENT_TYPES,
+    ELEMENT_TYPE_NETWORK,
     ElementOutputName,
     ElementRegistryEntry,
     ElementType,

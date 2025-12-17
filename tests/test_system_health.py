@@ -24,6 +24,8 @@ from custom_components.haeo.const import (
     DEFAULT_TIER_3_DURATION,
     DEFAULT_TIER_4_COUNT,
     DEFAULT_TIER_4_DURATION,
+)
+from custom_components.haeo.elements.network import (
     OUTPUT_NAME_OPTIMIZATION_COST,
     OUTPUT_NAME_OPTIMIZATION_DURATION,
     OUTPUT_NAME_OPTIMIZATION_STATUS,

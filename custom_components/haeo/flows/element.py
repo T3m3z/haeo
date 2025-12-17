@@ -4,9 +4,9 @@ from typing import Any, cast
 
 from homeassistant.config_entries import ConfigSubentryFlow, SubentryFlowResult
 
-from custom_components.haeo.const import CONF_ELEMENT_TYPE, CONF_NAME, ELEMENT_TYPE_NETWORK
+from custom_components.haeo.const import CONF_ELEMENT_TYPE, CONF_NAME
 from custom_components.haeo.data.loader.extractors import extract_entity_metadata
-from custom_components.haeo.elements import ElementConfigSchema, is_element_config_schema
+from custom_components.haeo.elements import ELEMENT_TYPE_NETWORK, ElementConfigSchema, is_element_config_schema
 from custom_components.haeo.model import ELEMENT_TYPE_CONNECTION
 from custom_components.haeo.network import evaluate_network_connectivity
 from custom_components.haeo.schema import schema_for_type
@@ -126,18 +126,10 @@ class ElementSubentryFlow(ConfigSubentryFlow):
     def _get_element_names(self) -> list[str]:
         """Return all element names available as connection targets, excluding the current subentry.
 
-        This includes both regular elements (batteries, grids, etc.) and the network subentry,
-        which is the primary connection target for inverters.
+        This includes all elements (batteries, grids, inverters, network, etc.).
+        Network is now a proper element type, so it's included automatically.
         """
-        names = list(self._get_other_element_entries().keys())
-
-        # Also include the network subentry as a connection target
-        network_name = self._get_network_name()
-        if network_name and network_name not in names:
-            # Insert network at the beginning since it's the most common connection target
-            names.insert(0, network_name)
-
-        return names
+        return list(self._get_other_element_entries().keys())
 
     def _get_network_name(self) -> str | None:
         """Return the network name from the network subentry, if it exists."""

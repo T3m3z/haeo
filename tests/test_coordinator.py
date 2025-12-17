@@ -34,8 +34,10 @@ from custom_components.haeo.const import (
     DEFAULT_TIER_4_DURATION,
     DEFAULT_UPDATE_INTERVAL_MINUTES,
     DOMAIN,
-    ELEMENT_TYPE_NETWORK,
     INTEGRATION_TYPE_HUB,
+)
+from custom_components.haeo.elements import ELEMENT_TYPE_NETWORK
+from custom_components.haeo.elements.network import (
     OUTPUT_NAME_OPTIMIZATION_COST,
     OUTPUT_NAME_OPTIMIZATION_DURATION,
     OUTPUT_NAME_OPTIMIZATION_STATUS,

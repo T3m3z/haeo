@@ -31,12 +31,12 @@ from typing import Any, Final, Literal, NamedTuple, TypeGuard, cast
 from homeassistant.config_entries import ConfigEntry, ConfigSubentry
 import voluptuous as vol
 
-from custom_components.haeo.const import CONF_ELEMENT_TYPE, NETWORK_OUTPUT_NAMES, NetworkDeviceName, NetworkOutputName
+from custom_components.haeo.const import CONF_ELEMENT_TYPE
 from custom_components.haeo.model import ModelOutputName
 from custom_components.haeo.model.output_data import OutputData
 from custom_components.haeo.schema import schema_for_type
 
-from . import battery, grid, inverter, load, photovoltaics
+from . import battery, grid, inverter, load, network, photovoltaics
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -45,6 +45,7 @@ type ElementType = Literal[
     "grid",
     "inverter",
     "load",
+    "network",
     "photovoltaics",
 ]
 
@@ -52,6 +53,7 @@ ELEMENT_TYPE_BATTERY: Final = battery.ELEMENT_TYPE
 ELEMENT_TYPE_GRID: Final = grid.ELEMENT_TYPE
 ELEMENT_TYPE_INVERTER: Final = inverter.ELEMENT_TYPE
 ELEMENT_TYPE_LOAD: Final = load.ELEMENT_TYPE
+ELEMENT_TYPE_NETWORK: Final = network.ELEMENT_TYPE
 ELEMENT_TYPE_PHOTOVOLTAICS: Final = photovoltaics.ELEMENT_TYPE
 
 ElementConfigSchema = (
@@ -59,6 +61,7 @@ ElementConfigSchema = (
     | grid.GridConfigSchema
     | inverter.InverterConfigSchema
     | load.LoadConfigSchema
+    | network.NetworkConfigSchema
     | photovoltaics.PhotovoltaicsConfigSchema
 )
 
@@ -67,6 +70,7 @@ ElementConfigData = (
     | grid.GridConfigData
     | inverter.InverterConfigData
     | load.LoadConfigData
+    | network.NetworkConfigData
     | photovoltaics.PhotovoltaicsConfigData
 )
 
@@ -76,8 +80,8 @@ type ElementOutputName = (
     | grid.GridOutputName
     | inverter.InverterOutputName
     | load.LoadOutputName
+    | network.NetworkOutputName
     | photovoltaics.PhotovoltaicsOutputName
-    | NetworkOutputName
 )
 
 ELEMENT_OUTPUT_NAMES: Final[frozenset[ElementOutputName]] = frozenset(
@@ -85,8 +89,8 @@ ELEMENT_OUTPUT_NAMES: Final[frozenset[ElementOutputName]] = frozenset(
     | grid.GRID_OUTPUT_NAMES
     | inverter.INVERTER_OUTPUT_NAMES
     | load.LOAD_OUTPUT_NAMES
+    | network.NETWORK_OUTPUT_NAMES
     | photovoltaics.PHOTOVOLTAIC_OUTPUT_NAMES
-    | NETWORK_OUTPUT_NAMES
 )
 
 # Device translation keys for devices
@@ -96,19 +100,17 @@ type ElementDeviceName = (
     | grid.GridDeviceName
     | inverter.InverterDeviceName
     | load.LoadDeviceName
+    | network.NetworkDeviceName
     | photovoltaics.PhotovoltaicsDeviceName
-    | NetworkDeviceName
 )
-
-NETWORK_DEVICE_NAMES: Final[frozenset[NetworkDeviceName]] = frozenset(("network",))
 
 ELEMENT_DEVICE_NAMES: Final[frozenset[ElementDeviceName]] = frozenset(
     battery.BATTERY_DEVICE_NAMES
     | grid.GRID_DEVICE_NAMES
     | inverter.INVERTER_DEVICE_NAMES
     | load.LOAD_DEVICE_NAMES
+    | network.NETWORK_DEVICE_NAMES
     | photovoltaics.PHOTOVOLTAICS_DEVICE_NAMES
-    | NETWORK_DEVICE_NAMES
 )
 
 type CreateModelElementsFn = Callable[[Any], list[dict[str, Any]]]
@@ -169,6 +171,14 @@ ELEMENT_TYPES: dict[ElementType, ElementRegistryEntry] = {
         translation_key=load.ELEMENT_TYPE,
         create_model_elements=load.create_model_elements,
         outputs=cast("OutputsFn", load.outputs),
+    ),
+    network.ELEMENT_TYPE: ElementRegistryEntry(
+        schema=network.NetworkConfigSchema,
+        data=network.NetworkConfigData,
+        defaults=network.CONFIG_DEFAULTS,
+        translation_key=network.ELEMENT_TYPE,
+        create_model_elements=network.create_model_elements,
+        outputs=cast("OutputsFn", network.outputs),
     ),
     photovoltaics.ELEMENT_TYPE: ElementRegistryEntry(
         schema=photovoltaics.PhotovoltaicsConfigSchema,
@@ -232,6 +242,7 @@ __all__ = [
     "ELEMENT_TYPE_GRID",
     "ELEMENT_TYPE_INVERTER",
     "ELEMENT_TYPE_LOAD",
+    "ELEMENT_TYPE_NETWORK",
     "ELEMENT_TYPE_PHOTOVOLTAICS",
     "CreateModelElementsFn",
     "ElementConfigData",

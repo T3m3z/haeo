@@ -18,7 +18,9 @@ from custom_components.haeo.const import (
     CONF_ELEMENT_TYPE,
     CONF_NAME,
     DOMAIN,
-    ELEMENT_TYPE_NETWORK,
+)
+from custom_components.haeo.elements import ELEMENT_TYPE_NETWORK
+from custom_components.haeo.elements.network import (
     OUTPUT_NAME_OPTIMIZATION_DURATION,
     OUTPUT_NAME_OPTIMIZATION_STATUS,
 )
