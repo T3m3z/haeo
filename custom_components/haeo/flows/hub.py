@@ -22,7 +22,7 @@ from custom_components.haeo.const import (
     DOMAIN,
     INTEGRATION_TYPE_HUB,
 )
-from custom_components.haeo.elements import ELEMENT_TYPES
+from custom_components.haeo.elements import ELEMENT_TYPES, ELEMENT_TYPE_NETWORK
 
 from . import get_network_config_schema
 from .element import create_subentry_flow_class
@@ -98,12 +98,11 @@ class HubConfigFlow(ConfigFlow, domain=DOMAIN):
         """Return subentries supported by this integration."""
         _ = config_entry  # Unused but required by signature
 
-        # Register regular element flows
+        # Register element flows, excluding the network which is auto-created
         flows: dict[str, type[ConfigSubentryFlow]] = {
             element_type: create_subentry_flow_class(element_type, entry.schema, entry.defaults)
             for element_type, entry in ELEMENT_TYPES.items()
+            if element_type != ELEMENT_TYPE_NETWORK
         }
-
-        # Note that the Network subentry is not included here as it can't be added/removed like other elements
 
         return flows
